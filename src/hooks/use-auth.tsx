@@ -28,11 +28,16 @@ function readStored<T>(key: string): T | null {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(() =>
-    typeof window === "undefined" ? null : window.localStorage.getItem(TOKEN_KEY),
-  );
-  const [user, setUser] = useState<AuthUser | null>(() => readStored<AuthUser>(USER_KEY));
-  const [tenant, setTenant] = useState<AuthTenant>(() => readStored<AuthTenant>(TENANT_KEY));
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [tenant, setTenant] = useState<AuthTenant>(null);
+
+  // Hydrate from localStorage after mount (SSR-safe)
+  useEffect(() => {
+    setToken(window.localStorage.getItem(TOKEN_KEY));
+    setUser(readStored<AuthUser>(USER_KEY));
+    setTenant(readStored<AuthTenant>(TENANT_KEY));
+  }, []);
 
   const setSession = useCallback((data: LoginResponse) => {
     window.localStorage.setItem(TOKEN_KEY, data.token);
