@@ -8,6 +8,9 @@ export default defineConfig({
   resolve: {
     alias: { "@": path.resolve(process.cwd(), "src") },
   },
+  ssr: {
+    noExternal: ["h3-v2"],
+  },
   plugins: [
     tailwindcss(),
     tanstackStart({ target: "cloudflare-module" }),
