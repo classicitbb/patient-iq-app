@@ -29,7 +29,28 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       <Link to="/" className="text-primary underline">Back home</Link>
     </div>
   ),
+  errorComponent: ErrorPage,
 });
+
+function ErrorPage({ error, reset }: { error: Error; reset: () => void }) {
+  // Log the raw Error so the stack reaches Server Logs / browser console.
+  console.error("[root errorComponent]", error);
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center">
+      <h1 className="text-3xl font-semibold">Something went wrong</h1>
+      <p className="text-muted-foreground max-w-md">
+        We hit an unexpected error. The team has been notified. You can try again, or head back home.
+      </p>
+      <p className="text-xs font-mono text-muted-foreground/70 max-w-md break-all">
+        {error?.message || "Unknown error"}
+      </p>
+      <div className="flex gap-3">
+        <button onClick={reset} className="px-4 py-2 border rounded hover:bg-muted text-sm">Try again</button>
+        <Link to="/" className="px-4 py-2 border rounded hover:bg-muted text-sm">Go home</Link>
+      </div>
+    </div>
+  );
+}
 
 function RootShell() {
   return (
