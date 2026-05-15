@@ -9,13 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SystemStatusRouteImport } from './routes/system-status'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DebugRouteImport } from './routes/debug'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as IntakeCodeRouteImport } from './routes/intake.$code'
+import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 
+const SystemStatusRoute = SystemStatusRouteImport.update({
+  id: '/system-status',
+  path: '/system-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DebugRoute = DebugRouteImport.update({
+  id: '/debug',
+  path: '/debug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,44 +41,94 @@ const IntakeCodeRoute = IntakeCodeRouteImport.update({
   path: '/intake/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
+  id: '/api/public/health',
+  path: '/api/public/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/debug': typeof DebugRoute
   '/login': typeof LoginRoute
+  '/system-status': typeof SystemStatusRoute
   '/intake/$code': typeof IntakeCodeRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/debug': typeof DebugRoute
   '/login': typeof LoginRoute
+  '/system-status': typeof SystemStatusRoute
   '/intake/$code': typeof IntakeCodeRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/debug': typeof DebugRoute
   '/login': typeof LoginRoute
+  '/system-status': typeof SystemStatusRoute
   '/intake/$code': typeof IntakeCodeRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/intake/$code'
+  fullPaths:
+    | '/'
+    | '/debug'
+    | '/login'
+    | '/system-status'
+    | '/intake/$code'
+    | '/api/public/health'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/intake/$code'
-  id: '__root__' | '/' | '/login' | '/intake/$code'
+  to:
+    | '/'
+    | '/debug'
+    | '/login'
+    | '/system-status'
+    | '/intake/$code'
+    | '/api/public/health'
+  id:
+    | '__root__'
+    | '/'
+    | '/debug'
+    | '/login'
+    | '/system-status'
+    | '/intake/$code'
+    | '/api/public/health'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DebugRoute: typeof DebugRoute
   LoginRoute: typeof LoginRoute
+  SystemStatusRoute: typeof SystemStatusRoute
   IntakeCodeRoute: typeof IntakeCodeRoute
+  ApiPublicHealthRoute: typeof ApiPublicHealthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/system-status': {
+      id: '/system-status'
+      path: '/system-status'
+      fullPath: '/system-status'
+      preLoaderRoute: typeof SystemStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/debug': {
+      id: '/debug'
+      path: '/debug'
+      fullPath: '/debug'
+      preLoaderRoute: typeof DebugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -82,13 +145,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IntakeCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/health': {
+      id: '/api/public/health'
+      path: '/api/public/health'
+      fullPath: '/api/public/health'
+      preLoaderRoute: typeof ApiPublicHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DebugRoute: DebugRoute,
   LoginRoute: LoginRoute,
+  SystemStatusRoute: SystemStatusRoute,
   IntakeCodeRoute: IntakeCodeRoute,
+  ApiPublicHealthRoute: ApiPublicHealthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
