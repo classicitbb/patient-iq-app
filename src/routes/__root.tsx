@@ -1,5 +1,6 @@
 import { createRootRouteWithContext, HeadContent, Link, Outlet, Scripts } from "@tanstack/react-router";
 import type { QueryClient } from "@tanstack/react-query";
+import { AuthProvider } from "@/hooks/use-auth";
 import "../styles.css";
 
 interface RouterContext { queryClient: QueryClient }
@@ -35,7 +36,7 @@ function RootShell() {
     <html lang="en">
       <head><HeadContent /></head>
       <body>
-        <div id="root"><Outlet /></div>
+        <div id="root"><AuthProvider><Outlet /></AuthProvider></div>
         <Scripts />
       </body>
     </html>
