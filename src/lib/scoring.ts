@@ -13,7 +13,7 @@ export type Score = {
 };
 
 const pick = <T,>(map: Record<string, T>, k: string | undefined, fallback: T): T =>
-  (k && map[k]) ?? fallback;
+  (k !== undefined && map[k] !== undefined ? map[k] : fallback);
 
 export function scoreAnswers(ans: Answers): Score {
   const pr =

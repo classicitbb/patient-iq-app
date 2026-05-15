@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getPublicTenant, submitPublicIntake } from "@/lib/intake.functions";
@@ -425,4 +425,4 @@ function Chip({ children, tone }: { children: React.ReactNode; tone?: "accent" }
   );
 }
 
-useEffect; // satisfy TS unused import in some configs (no-op)
+
