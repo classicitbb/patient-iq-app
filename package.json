@@ -1,42 +1,35 @@
 {
-  "name": "patient-smart-app",
-  "version": "2.0.0",
+  "name": "patient-iq-app",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:server": "nodemon server/index.js",
-    "dev:staging": "node --env-file=.env.staging node_modules/.bin/nodemon server/index.js",
-    "dev:client": "vite client --config client/vite.config.js",
-    "build": "vite build client --mode production",
-    "build:staging": "vite build client --mode staging",
-    "start": "node server/index.js",
-    "start:staging": "node --env-file=.env.staging server/index.js",
-    "seed": "node scripts/seed.js",
-    "seed:pricesmart": "node scripts/seed-pricesmart.js",
-    "seed:reset": "node scripts/seed-reset.js",
-    "migrate": "node scripts/migrate.js",
-    "create-tenant": "node scripts/create-tenant.js",
-    "supabase:start": "supabase start",
-    "supabase:stop": "supabase stop",
-    "supabase:status": "supabase status",
-    "supabase:db:reset": "supabase db reset",
-    "supabase:migration:new": "supabase migration new"
+    "dev": "vite",
+    "build": "vite build",
+    "build:dev": "vite build --mode development",
+    "start": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "@vercel/analytics": "^1.0.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "@tanstack/react-query": "^5.59.0",
+    "@tanstack/react-router": "^1.95.0",
+    "@tanstack/react-router-with-query": "^1.95.0",
+    "@tanstack/react-start": "^1.95.0",
     "bcryptjs": "^2.4.3",
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.18.3",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.20.0"
+    "lucide-react": "^0.462.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-legacy": "^8.0.1",
-    "concurrently": "^8.2.2",
-    "nodemon": "^3.1.0",
-    "supabase": "^2.98.2",
-    "vite": "^8.0.12"
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.6.0",
+    "vite": "^7.0.0"
   }
 }
