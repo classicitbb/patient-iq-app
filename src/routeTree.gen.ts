@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SystemStatusRouteImport } from './routes/system-status'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as DebugRouteImport } from './routes/debug'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as IntakeCodeRouteImport } from './routes/intake.$code'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
@@ -26,9 +26,9 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DebugRoute = DebugRouteImport.update({
-  id: '/debug',
-  path: '/debug',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,7 +49,7 @@ const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/debug': typeof DebugRoute
+  '/admin': typeof AdminRoute
   '/login': typeof LoginRoute
   '/system-status': typeof SystemStatusRoute
   '/intake/$code': typeof IntakeCodeRoute
@@ -57,7 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/debug': typeof DebugRoute
+  '/admin': typeof AdminRoute
   '/login': typeof LoginRoute
   '/system-status': typeof SystemStatusRoute
   '/intake/$code': typeof IntakeCodeRoute
@@ -66,7 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/debug': typeof DebugRoute
+  '/admin': typeof AdminRoute
   '/login': typeof LoginRoute
   '/system-status': typeof SystemStatusRoute
   '/intake/$code': typeof IntakeCodeRoute
@@ -74,34 +74,15 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/debug'
-    | '/login'
-    | '/system-status'
-    | '/intake/$code'
-    | '/api/public/health'
+  fullPaths: '/' | '/admin' | '/login' | '/intake/$code'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/debug'
-    | '/login'
-    | '/system-status'
-    | '/intake/$code'
-    | '/api/public/health'
-  id:
-    | '__root__'
-    | '/'
-    | '/debug'
-    | '/login'
-    | '/system-status'
-    | '/intake/$code'
-    | '/api/public/health'
+  to: '/' | '/admin' | '/login' | '/intake/$code'
+  id: '__root__' | '/' | '/admin' | '/login' | '/intake/$code'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DebugRoute: typeof DebugRoute
+  AdminRoute: typeof AdminRoute
   LoginRoute: typeof LoginRoute
   SystemStatusRoute: typeof SystemStatusRoute
   IntakeCodeRoute: typeof IntakeCodeRoute
@@ -124,11 +105,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/debug': {
-      id: '/debug'
-      path: '/debug'
-      fullPath: '/debug'
-      preLoaderRoute: typeof DebugRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -157,7 +138,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DebugRoute: DebugRoute,
+  AdminRoute: AdminRoute,
   LoginRoute: LoginRoute,
   SystemStatusRoute: SystemStatusRoute,
   IntakeCodeRoute: IntakeCodeRoute,
