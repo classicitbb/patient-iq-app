@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { loginWithPin } from "@/lib/auth.functions";
+import { loginAdminWithPassword, loginWithPin } from "@/lib/auth.functions";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/login")({
@@ -16,9 +16,13 @@ function LoginPage() {
   const { redirect } = useSearch({ from: "/login" });
   const { isAuthenticated, user, setSession } = useAuth();
   const login = useServerFn(loginWithPin);
+  const adminLogin = useServerFn(loginAdminWithPassword);
 
+  const [mode, setMode] = useState<"staff" | "admin">("staff");
   const [email, setEmail] = useState("");
   const [pin, setPin] = useState("");
+  const [adminUsername, setAdminUsername] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -33,7 +37,7 @@ function LoginPage() {
     }
   }, [isAuthenticated, user, redirect, navigate]);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleStaffSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     if (!email || !pin) {
@@ -57,6 +61,27 @@ function LoginPage() {
     }
   }
 
+  async function handleAdminSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    if (!adminUsername || !adminPassword) {
+      setError("Please enter your admin username and password.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await adminLogin({
+        data: { username: adminUsername.trim(), password: adminPassword },
+      });
+      setSession(res);
+      navigate({ to: redirect || "/admin" });
+    } catch {
+      setError("Incorrect admin username or password. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-muted/30">
       <div className="w-full max-w-md">
@@ -65,51 +90,124 @@ function LoginPage() {
         <div className="text-center mt-6 mb-8">
           <span className="text-3xl">👓</span>
           <h1 className="text-2xl font-bold mt-2">Patient Smart App</h1>
-          <p className="text-sm text-muted-foreground">Staff Login</p>
+          <p className="text-sm text-muted-foreground">
+            {mode === "staff" ? "Staff Login" : "Admin Console"}
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-background p-8 space-y-4">
-          <h2 className="text-xl font-semibold">Sign in to your account</h2>
-          <p className="text-sm text-muted-foreground">Enter your email and PIN to access your clinic's app.</p>
+        <div className="rounded-2xl border border-border bg-background p-8 space-y-4">
+          <div className="grid grid-cols-2 gap-2 rounded-md bg-muted p-1">
+            <button
+              type="button"
+              onClick={() => {
+                setMode("staff");
+                setError("");
+              }}
+              className={`rounded px-3 py-2 text-sm font-medium ${
+                mode === "staff" ? "bg-background shadow-sm" : "text-muted-foreground"
+              }`}
+            >
+              Staff PIN
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("admin");
+                setError("");
+              }}
+              className={`rounded px-3 py-2 text-sm font-medium ${
+                mode === "admin" ? "bg-background shadow-sm" : "text-muted-foreground"
+              }`}
+            >
+              Admin
+            </button>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold">Sign in to your account</h2>
+            <p className="text-sm text-muted-foreground">
+              {mode === "staff"
+                ? "Enter your email and PIN to access your clinic's app."
+                : "Enter the configured admin username and password."}
+            </p>
+          </div>
 
           {error && (
             <div className="rounded-md bg-red-50 text-red-700 px-4 py-3 text-sm border border-red-200">{error}</div>
           )}
 
-          <div>
-            <label className="text-sm font-medium block mb-1">Email address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              placeholder="you@example.com"
-              className="w-full rounded-md border border-border px-3 py-2 bg-background"
-            />
-          </div>
+          {mode === "staff" ? (
+            <form onSubmit={handleStaffSubmit} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium block mb-1">Email address</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  className="w-full rounded-md border border-border px-3 py-2 bg-background"
+                />
+              </div>
 
-          <div>
-            <label className="text-sm font-medium block mb-1">PIN</label>
-            <input
-              type="password"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              maxLength={8}
-              inputMode="numeric"
-              autoComplete="current-password"
-              placeholder="Enter your PIN"
-              className="w-full rounded-md border border-border px-3 py-2 bg-background"
-            />
-          </div>
+              <div>
+                <label className="text-sm font-medium block mb-1">PIN</label>
+                <input
+                  type="password"
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value)}
+                  maxLength={8}
+                  inputMode="numeric"
+                  autoComplete="current-password"
+                  placeholder="Enter your PIN"
+                  className="w-full rounded-md border border-border px-3 py-2 bg-background"
+                />
+              </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-md bg-primary text-primary-foreground px-4 py-2.5 font-medium disabled:opacity-50"
-          >
-            {loading ? "Signing in…" : "Sign In →"}
-          </button>
-        </form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-md bg-primary text-primary-foreground px-4 py-2.5 font-medium disabled:opacity-50"
+              >
+                {loading ? "Signing in..." : "Sign In ->"}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleAdminSubmit} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium block mb-1">Admin username</label>
+                <input
+                  type="text"
+                  value={adminUsername}
+                  onChange={(e) => setAdminUsername(e.target.value)}
+                  autoComplete="username"
+                  placeholder="Admin username"
+                  className="w-full rounded-md border border-border px-3 py-2 bg-background"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium block mb-1">Password</label>
+                <input
+                  type="password"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  autoComplete="current-password"
+                  placeholder="Admin password"
+                  className="w-full rounded-md border border-border px-3 py-2 bg-background"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-md bg-primary text-primary-foreground px-4 py-2.5 font-medium disabled:opacity-50"
+              >
+                {loading ? "Signing in..." : "Admin Sign In ->"}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );

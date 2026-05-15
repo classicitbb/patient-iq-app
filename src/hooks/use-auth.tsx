@@ -10,6 +10,7 @@ type AuthState = {
   user: AuthUser | null;
   tenant: AuthTenant;
   isAuthenticated: boolean;
+  isHydrated: boolean;
   setSession: (data: LoginResponse) => void;
   logout: () => void;
 };
@@ -31,12 +32,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [tenant, setTenant] = useState<AuthTenant>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   // Hydrate from localStorage after mount (SSR-safe)
   useEffect(() => {
     setToken(window.localStorage.getItem(TOKEN_KEY));
     setUser(readStored<AuthUser>(USER_KEY));
     setTenant(readStored<AuthTenant>(TENANT_KEY));
+    setIsHydrated(true);
   }, []);
 
   const setSession = useCallback((data: LoginResponse) => {
@@ -69,8 +72,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthState>(
-    () => ({ token, user, tenant, isAuthenticated: !!token && !!user, setSession, logout }),
-    [token, user, tenant, setSession, logout],
+    () => ({ token, user, tenant, isAuthenticated: !!token && !!user, isHydrated, setSession, logout }),
+    [token, user, tenant, isHydrated, setSession, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
