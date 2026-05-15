@@ -1,16 +1,37 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { loginWithPin } from "@/lib/auth.functions";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
+    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+  }),
   component: LoginPage,
 });
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { redirect } = useSearch({ from: "/login" });
+  const { isAuthenticated, user, setSession } = useAuth();
+  const login = useServerFn(loginWithPin);
+
   const [email, setEmail] = useState("");
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  function defaultRouteFor(role: string | undefined) {
+    if (role === "admin" || role === "dev") return "/admin";
+    return "/csr";
+  }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate({ to: redirect || defaultRouteFor(user?.role) });
+    }
+  }, [isAuthenticated, user, redirect, navigate]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -21,12 +42,19 @@ function LoginPage() {
     }
     setLoading(true);
     try {
-      // TODO: wire to server function for PIN verification once Phase 4 lands
-      setError("Staff login is being wired up to your Supabase users table — coming in the next phase.");
+      const res = await login({ data: { email: email.trim(), pin: pin.trim() } });
+      setSession(res);
+      navigate({ to: redirect || defaultRouteFor(res.user.role) });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Login failed";
+      setError(
+        msg.toLowerCase().includes("invalid")
+          ? "Incorrect email or PIN. Please try again."
+          : msg,
+      );
     } finally {
       setLoading(false);
     }
-    void navigate;
   }
 
   return (
@@ -67,6 +95,7 @@ function LoginPage() {
               value={pin}
               onChange={(e) => setPin(e.target.value)}
               maxLength={8}
+              inputMode="numeric"
               autoComplete="current-password"
               placeholder="Enter your PIN"
               className="w-full rounded-md border border-border px-3 py-2 bg-background"
