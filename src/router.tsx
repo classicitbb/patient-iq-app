@@ -3,6 +3,8 @@ import { QueryClient } from "@tanstack/react-query";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
 import { routeTree } from "./routeTree.gen";
 
+export const getRouter = createRouter;
+
 export function createRouter() {
   const queryClient = new QueryClient();
   const router = createTanstackRouter({
